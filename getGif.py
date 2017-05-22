@@ -77,5 +77,6 @@ nextUrl = getNextPage(mHtml)
 while nextUrl != startUrl:
     mHtml = getHtml(nextUrl)
     getImages(mHtml)
-    time.sleep(200)
     nextUrl = getNextPage(mHtml)
+    print("休眠20s")
+    time.sleep(20)
