@@ -5,6 +5,7 @@ import os
 import time
 import requests
 import random
+from bs4 import BeautifulSoup
 
 urls="http://joke.4399pk.com/funnyimg/find.html#"
 
@@ -83,6 +84,10 @@ def getImages(html):
     pattern = re.compile('big_src="[^\s]*"',re.S)
     AllImage = re.findall(pattern, html)
     print(AllImage)
+
+    infoPattern = re.compile('pic_intro="[^\s]*"',re.S)
+    AllInfo = re.findall(infoPattern, html)
+
     for item in AllImage:
         time.sleep(1)
         imagepath = item.split('"')[1]
@@ -98,6 +103,27 @@ def getImages(html):
         else:
             print("已经存在"+filename) 
 
+def getImageBySoup(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    all_a =soup.find('div',class_="pic-list").find_all('img')
+    for item in all_a:
+        info = item['pic_intro']
+        imgPath = item['big_src']
+        print(info)
+        print(imgPath)
+        p,filename=os.path.split(imgPath)
+        houzui = filename.split('.')[1]
+        filename = info+'.'+houzui
+        if not os.path.exists(filename):
+            if not (filename.endswith("150x150.jpg")):
+                print("下载链接:" + imgPath)  
+                print("文件名:" + filename) 
+                print("下载小图中，请耐心等待...")
+                urllib.request.urlretrieve(imgPath, filename)
+                time.sleep(2)
+        else:
+            print("已经存在"+filename) 
+
 
 gotoDir(desPath)
 instance = download()
@@ -107,9 +133,10 @@ startUrl = getFirstPage(instance.get(urls).text)
 # mHtml = getHtml(startUrl)
 mHtml = instance.get(startUrl).text
 nextUrl = getNextPage(mHtml)
+
 while nextUrl != startUrl:
     mHtml = instance.get(nextUrl).text
-    getImages(mHtml)
+    getImageBySoup(instance.get(nextUrl).text)
     nextUrl = getNextPage(mHtml)
-    print("休眠20s")
-    time.sleep(20)
+    print("休眠10s")
+    time.sleep(10)
