@@ -119,7 +119,11 @@ def getImageBySoup(html):
                 print("下载链接:" + imgPath)  
                 print("文件名:" + filename) 
                 print("下载小图中，请耐心等待...")
-                urllib.request.urlretrieve(imgPath, filename)
+                # urllib.request.urlretrieve(imgPath, filename)
+                img = mRequest.get(imgPath)
+                mImgFile = open(filename,'ab')
+                mImgFile.write(img.content)
+                mImgFile.close()
                 time.sleep(2)
         else:
             print("已经存在"+filename) 
