@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 urls="http://joke.4399pk.com/funnyimg/find.html#"
 
-desPath = r'F:\gifPic'
+desPath = r'F:\gifPic2'
 class download:
     def __init__(self):
         self.user_agent_list = [
@@ -103,7 +103,7 @@ def getImages(html):
         else:
             print("已经存在"+filename) 
 
-def getImageBySoup(html):
+def getImageBySoup(mRequest,html):
     soup = BeautifulSoup(html, 'html.parser')
     all_a =soup.find('div',class_="pic-list").find_all('img')
     for item in all_a:
@@ -118,12 +118,14 @@ def getImageBySoup(html):
             if not (filename.endswith("150x150.jpg")):
                 print("下载链接:" + imgPath)  
                 print("文件名:" + filename) 
-                print("下载小图中，请耐心等待...")
+                print("下载中，请耐心等待...")
                 # urllib.request.urlretrieve(imgPath, filename)
                 img = mRequest.get(imgPath)
                 mImgFile = open(filename,'ab')
-                mImgFile.write(img.content)
-                mImgFile.close()
+                try:
+                    mImgFile.write(img.content)
+                finally:
+                    mImgFile.close()
                 time.sleep(2)
         else:
             print("已经存在"+filename) 
@@ -131,16 +133,28 @@ def getImageBySoup(html):
 
 gotoDir(desPath)
 instance = download()
-
-startUrl = getFirstPage(instance.get(urls).text)
 # startUrl = 'http://joke.4399pk.com/funnyimg/10529.html'
 # mHtml = getHtml(startUrl)
+if os.path.exists('temp.txt'):
+    preFile = open('temp.txt', 'r')
+    try:
+        startUrl = preFile.read() 
+    finally:
+        preFile.close()
+else:
+    startUrl = getFirstPage(instance.get(urls).text)
+
 mHtml = instance.get(startUrl).text
 nextUrl = getNextPage(mHtml)
 
 while nextUrl != startUrl:
     mHtml = instance.get(nextUrl).text
-    getImageBySoup(instance.get(nextUrl).text)
+    getImageBySoup(instance,instance.get(nextUrl).text)
     nextUrl = getNextPage(mHtml)
+    tempFile = open('temp.txt','w')
+    try:
+        tempFile.write(nextUrl)
+    finally:
+        tempFile.close()
     print("休眠10s")
     time.sleep(10)
