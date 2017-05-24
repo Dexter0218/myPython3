@@ -78,6 +78,11 @@ def getNextPage(html):
     html = re.findall(htmlpattern, Allhtml[0])
     result = html[0].replace("href=\"","")
     print(result)
+    logFile = open('log.txt', 'a')
+    try:
+        logFile.write(result+'\n')
+    finally:
+        logFile.close
     return result
 
 def getImages(html):
