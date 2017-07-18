@@ -31,7 +31,7 @@ class download:
     def get(self, url):
         UA = random.choice(self.user_agent_list) ##从self.user_agent_list中随机取出一个字符串（聪明的小哥儿一定发现了这是完整的User-Agent中：后面的一半段）
         headers = {'User-Agent': UA}  ##构造成一个完整的User-Agent （UA代表的是上面随机取出来的字符串哦）
-        print(headers) ##打印headers
+        # print(headers) ##打印headers
         response = requests.get(url, headers=headers) ##这样服务器就会以为我们是真的浏览器了
         return response
 
